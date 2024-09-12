@@ -1,0 +1,77 @@
+---
+- name: Configuring server
+  hosts: webserver
+  become: yes
+  tasks:
+    - name: Install Apache Server
+      yum:
+        name: httpd
+        state: present
+
+    - name: Install mod for SSL 
+      yum:
+        name: mod_ssl
+        state: present
+
+    - name: Create directories for SSL certificates
+      file:
+        path: /etc/httpd/ssl
+        state: directory
+        mode: '0700'
+
+    - name: update SSL certificate
+      copy:
+        src: /path/to/server.crt
+        dest: /etc/httpd/ssl/server.crt
+        mode: '0600'
+
+    - name: update SSL key
+      copy:
+        src: /path/to/server.key
+        dest: /etc/httpd/ssl/server.key
+        mode: '0600'
+
+    - name: Configure Apache
+      copy:
+        content: |
+          <VirtualHost *:80>
+              ServerName test-example.com
+              Redirect permanent / https://test-example.com/
+          </VirtualHost>
+
+          <VirtualHost *:443>
+              ServerName test-example.com
+              DocumentRoot /var/www/html
+
+              SSLEngine on
+              SSLCertificateFile /etc/httpd/ssl/server.crt
+              SSLCertificateKeyFile /etc/httpd/ssl/server.key
+
+              <Directory "/var/www/html">
+                  AllowOverride All
+                  Require all granted
+              </Directory>
+          </VirtualHost>
+        dest: /etc/httpd/conf.d/ssl.conf
+        mode: '0644'
+
+    - name: Restart Apache HTTP Server
+      service:
+        name: httpd
+        state: restarted
+        enabled: yes
+
+    - name: Deploy HTML file
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Hello World</title>
+          </head>
+          <body>
+              <h1>Hello World!</h1>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        mode: '0644'
