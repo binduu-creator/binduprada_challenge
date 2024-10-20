@@ -12,9 +12,9 @@ def validate_credit_card(card_number):
     # Check if the card contains 4 or more consecutive repeated digits
     card_number_clean = card_number.replace("-", "")
     if re.search(r"(\d)\1{3,}", card_number_clean):
-        return "Invalid"
+        return "Invalid
     
-    return "Valid"
+    
 
 # Input the number of card numbers to check
 n = int(input("Enter the number of credit cards: "))
