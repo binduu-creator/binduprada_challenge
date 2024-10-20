@@ -14,7 +14,7 @@ def validate_credit_card(card_number):
     if re.search(r"(\d)\1{3,}", card_number_clean):
         return "Invalid"
          "valid"
-    
+    welcome
     
 
 # Input the number of card numbers to check
